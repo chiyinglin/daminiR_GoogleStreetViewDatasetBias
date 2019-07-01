@@ -1,0 +1,102 @@
+---
+title: "google_street_view"
+author: "Damini Rijhwani"
+date: "6/11/2019"
+output: html_document
+---
+
+```{r}
+
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(magrittr)
+library(dplyr)
+library(ggthemes)
+
+library(ggplot2)
+
+set.seed(1)
+states <- map_data("state")
+
+
+dat <- read.csv("C:/Users/Damini/PycharmProjects/GoogleStreetView/saved.csv", header = TRUE, stringsAsFactors = FALSE)
+
+library(sp)
+library(maps)
+library(maptools)
+
+# The single argument to this function, pointsDF, is a data.frame in which:
+#   - column 1 contains the longitude in degrees (negative in the US)
+#   - column 2 contains the latitude in degrees
+
+latlong2county <- function(pointsDF) {
+  # Prepare SpatialPolygons object with one SpatialPolygon
+  # per county
+  counties <- map('county', fill=TRUE, col="transparent", plot=FALSE)
+  IDs <- sapply(strsplit(counties$names, ":"), function(x) x[1])
+  counties_sp <- map2SpatialPolygons(counties, IDs=IDs,
+                                     proj4string=CRS("+proj=longlat +datum=WGS84"))
+
+  # Convert pointsDF to a SpatialPoints object
+  pointsSP <- SpatialPoints(pointsDF,
+                            proj4string=CRS("+proj=longlat +datum=WGS84"))
+
+  # Use 'over' to get _indices_ of the Polygons object containing each point
+  indices <- over(pointsSP, counties_sp)
+
+  # Return the county names of the Polygons object containing each point
+  countyNames <- sapply(counties_sp@polygons, function(x) x@ID)
+  countyNames[indices]
+}
+dat2 <- read.csv("C:/Users/Damini/PycharmProjects/GoogleStreetView/saved3.csv", header = TRUE, stringsAsFactors = FALSE)
+colnames(dat2) <- c("city", "State", "lat", "lng", "months", "County")
+# for (row in 1:nrow(dat))
+# {
+#   long = dat[row, "lng"]
+#   lat = dat[row, "lat"]
+#   testPoints <- data.frame(x = long, y = lat)
+#   vec_satae_county = latlong2county(testPoints)
+#   county = strsplit(vec_satae_county, ",")
+#   print(county[[1]][2])
+#   dat[row, "County"] = county[[1]][2]
+# }
+
+fun1 <- function(lst, n){
+  sapply(lst, `[`, n)
+}
+
+
+testPoints <- data.frame(x = dat2$lng, y = dat2$lat)
+vec_satae_county = latlong2county(testPoints)
+print(vec_satae_county)
+county_l = strsplit(vec_satae_county, ",")
+county = fun1(county_l, 2)
+dat2$County = county
+
+
+
+counties <- map_data("county")
+ch_df <- subset(counties, region == "illinois")
+ch_df$months = dat2$months[match(ch_df$subregion ,tolower(dat2$County))]
+
+county_df <- map_data("county")
+  map_plot <- ggplot()
+  map_plot = map_plot + geom_polygon(data=ch_df, aes(x=long, y=lat, group = group, fill=ch_df$months),colour="black") +
+    scale_fill_viridis_c(option = "inferno")
+  map_plot <- map_plot + labs(title=substitute(paste("Google Street View Average Last Update of street Images in Chicago")),
+                  subtitle="")+
+  labs(x="", y="", fill="last update since present [in months]") +theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+  # map_plot <- map_plot + theme_map(base_family="serif")
+  # map_plot <- map_plot + theme(legend.position=c(0.9, 0.25))
+  # map_plot <- map_plot + theme(plot.title=element_text(margin=margin(b=3), size=16,))
+  # map_plot <- map_plot + theme(plot.subtitle=element_text(margin=margin(b=-10), size=13, ))
+  print(map_plot)
+
+```
+
