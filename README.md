@@ -41,22 +41,22 @@
 ![](heatmap_chicago_label.png)
 ## Key Features 
 
-Heatmaps produces using Google API to collect images on large scale
+Heatmaps produced using Google API to collect images on a large scale.
 
 ## Intro 
 
 The motivation of this project stems from the increasing use of google street view images in machine 
-learning models, to predict outcomes. In the recent affairs of fair AI,
-it seemed appropriate to study the large dataset and analyze potential bias.
+learning models to predict outcomes. In the recent affairs of fair AI,
+it seemed appropriate to study the large dataset and analyze the potential of adverse bias.
 
 
 ## Approach to Problem
 
-My approach to solving this problem was to gather 100 longitude and latitude coordinate of a location for each county,
+My approach to solving this problem is to gather  longitude and latitude coordinate of a location for each county,
  in which at each coordinate a street view image is requested. If a street exist than an image is quarried, and the 
  update time is saved. The average of  update times in each county is then calculated and represented on a heatmap. 
  The distribution on the heatmap helps asses the distribution of the last update Google Street View has had 
- and can be correlated to several factors and analyzed. 
+ and can be correlated to several factors and analyzed.  More details can be check on the <a href="https://thedisruptculture.com/2019/06/24/is-google-street-view-dataset-biased/">blog</a>. 
 
 ## Download 
 Clone the github repo including source. 
