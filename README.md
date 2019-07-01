@@ -38,6 +38,7 @@
 <div id=”mainDiv”, align="center">
  
 ![](heatmap_chicago.png)
+![](heatmap_chicago_label.png)
 ## Key Features 
 
 Heatmaps produces using Google API to collect images on large scale
